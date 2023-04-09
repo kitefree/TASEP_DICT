@@ -19,18 +19,18 @@ $api_name = $_GET["api_name"];
 
 switch($api_name)
 {
-    case "getQueryWordHistoryList":
-        $exam_id = $_GET["exam_id"];
-        $exam_question_id = $_GET["exam_question_id"];        
+    case "getStudentQueryWordHistoryList":
+        $exam_code = $_GET["exam_code"];
+        $exam_question_code = $_GET["exam_question_code"];   
         $student_code = $_GET["student_code"];        
         
-        $results = $apiService->getQueryWordHistoryList($exam_id,$exam_question_id,$student_code);
+        $results = $apiService->getStudentQueryWordHistoryList($exam_code,$exam_question_code,$student_code);
         echo $results;
         break;
     case "getDictWordsList":
-        $exam_id = $_GET["exam_id"];
-        $exam_question_id = $_GET["exam_question_id"];        
-        $results = $apiService->getDictWordsList($exam_id,$exam_question_id);
+        $exam_code = $_GET["exam_code"];
+        $exam_question_code = $_GET["exam_question_code"];        
+        $results = $apiService->getDictWordsList($exam_code,$exam_question_code);
         echo $results;
         break;
     case "queryWord":

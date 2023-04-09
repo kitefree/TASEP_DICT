@@ -3,6 +3,12 @@ namespace Services;
 
 use stdClass;
 use DateTime;
+
+abstract class LogType {
+    const PAGE_LOAD_EVENT = 1;
+    const WORD_QUERY_EVENT = 2;    
+}
+
 class ApiService{
 
     private $_pdo;
@@ -13,33 +19,41 @@ class ApiService{
         $this->_logService = $logService;
     }
 
-    //取得字典單字清單
-    public function getDictWordsList($exam_id,$exam_question_id)
-    {
-        $querySQL = "SELECT id as value,word as label
-        FROM exam_question_words        
-        WHERE exam_id = ? 
-        AND exam_question_id = ?
-        UNION
-        SELECT id as value,word as label
-        FROM exam_question_words        
-        WHERE exam_id = ? 
-        AND exam_question_id = ?
-        AND meta_keyword is not null
-        ORDER BY value        
-        ";
+//取得字典單字清單
+public function getDictWordsList($exam_code,$exam_question_code)
+{
+    $querySQL = "SELECT
+    e.exam_code,
+    eq.question_code AS exam_question_code,
+    eqw.id as word_id,
+    eqw.word,
+    eqw.meta_keyword,
+    CASE
+        WHEN eqw.meta_keyword IS NULL THEN LOWER(eqw.word)
+        WHEN eqw.meta_keyword IS NOT NULL THEN CONCAT(LOWER(eqw.word), '...', IFNULL(LOWER(eqw.meta_keyword),''))
+    END AS label,    
+    eqw.id AS value,                 
+    JSON_ARRAYAGG(JSON_OBJECT('part_of_speech',eqwd.part_of_speech,'chinese_description',eqwd.chinese_description)) as descriptions              
+    FROM exams e
+    JOIN exam_questions eq ON e.id = eq.exam_id
+    JOIN exam_question_words eqw ON eq.exam_id = eqw.exam_id and eq.id = eqw.exam_question_id 
+    JOIN exam_question_words_description eqwd on eqw.exam_id = eqwd.exam_id and eqw.exam_question_id = eqwd.exam_question_id and eqw.id = eqwd.word_id 
+    WHERE e.exam_code = ?
+    AND eq.question_code = ?    
+    GROUP BY eqwd.word_id
+    ";
 
 
 
-        $results = $this->_pdo->query($querySQL,[$exam_id,
-                                                 $exam_question_id,
-                                                 $exam_id,
-                                                 $exam_question_id])->all();
+    $results = $this->_pdo->query($querySQL,[$exam_code,
+                                             $exam_question_code,
+                                             ])->all();
 
-        
+    
 
-        return json_encode($results);
-    }
+    return json_encode($results);
+}
+
 
     //使用者查詢單字
     public function queryWord($exam_id,$exam_code,$exam_question_id,$exam_question_code,$exam_question_word_id,$query_word,$student_code)
@@ -71,7 +85,7 @@ class ApiService{
             'exam_question_word_id' => $exam_question_word_id,
             'word' => $queryData->word,
             'meta_keyword' => $queryData->meta_keyword,
-            'type' => "2",
+            'type' => LogType::WORD_QUERY_EVENT,
             'query_word' => $query_word,
             'query_time' => $created_at,
         ];
@@ -114,47 +128,62 @@ class ApiService{
     }
 
     //取得使用者查詢單字歷史清單
-    public function getQueryWordHistoryList($exam_id,$exam_question_id,$student_code)
+    public function getStudentQueryWordHistoryList($exam_code,$exam_question_code,$student_code)
     {
 
-        $querySQL = "SELECT *
+        $querySQL = "SELECT word
         FROM student_query_logs        
-        WHERE exam_id = ? 
-        AND exam_question_id = ?
+        WHERE exam_code = ? 
+        AND exam_question_code = ?
         AND student_code = ?
-        AND type = 2        
-        ORDER BY created_at desc
+        AND type = ?                
         ";
 
-        $words = $this->_pdo->query($querySQL,[$exam_id,
-                                    $exam_question_id,
-                                    $student_code])->all();
-        
+        $words = $this->_pdo->query($querySQL,[$exam_code,
+                                    $exam_question_code,
+                                    $student_code,
+                                    LogType::WORD_QUERY_EVENT
+                                    ])->all();
+         
+
         if(count($words) == 0)
-        {
-            return "0";
+        {            
+            return "[]";
         }
         else {
-            foreach($words as $word)
-            {
-                $querySQL = "SELECT part_of_speech,chinese_description
-                FROM exam_question_words_description as eqwd       
-                WHERE eqwd.exam_id = ? 
-                AND eqwd.exam_question_id = ?
-                AND eqwd.word_id = ?
-                ORDER BY created_at desc
-                ";
-        
-                $words_description = $this->_pdo->query($querySQL,[$exam_id,$exam_question_id,$word->exam_question_word_id])->all();
-                $resData[] = [
-                    "exam_question_word_id" => $word->exam_question_word_id,
-                    "word" => $word->word,
-                    "meta_keyword" => $word->meta_keyword,
-                    "words_description" => $words_description];
-            }
+
+            $querySQL = "SELECT
+            logs.exam_code,
+            logs.exam_question_code,
+            logs.exam_question_word_id,
+            logs.word,
+            logs.meta_keyword,
+            CASE
+                WHEN logs.meta_keyword IS NULL THEN LOWER(logs.word)
+                WHEN logs.meta_keyword IS NOT NULL THEN CONCAT(LOWER(logs.word), '...', IFNULL(LOWER(logs.meta_keyword),''))
+            END AS label,    
+            logs.exam_question_word_id AS value,                 
+            JSON_ARRAYAGG(JSON_OBJECT('part_of_speech',eqwd.part_of_speech,'chinese_description',eqwd.chinese_description)) as descriptions              
+            FROM student_query_logs logs
+            JOIN exam_question_words_description eqwd on eqwd.exam_id = logs.exam_id and eqwd.exam_question_id = logs.exam_question_id and eqwd.word_id = logs.exam_question_word_id
+            WHERE logs.exam_code = ?
+            AND logs.exam_question_code = ?    
+            AND logs.student_code = ?    
+            AND logs.type = ?
+            GROUP BY logs.exam_question_word_id
+            ";
+            //WHERE e.exam_code = ?
+            //AND eq.question_code = ?    
+            $results = $this->_pdo->query($querySQL,[$exam_code,
+                                                     $exam_question_code,
+                                                     $student_code,
+                                                     LogType::WORD_QUERY_EVENT
+                                                     ])->all();
+            return json_encode($results);
+
         }
 
-        return json_encode($resData);
+
 
     }
 

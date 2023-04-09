@@ -3,6 +3,11 @@ namespace Services;
 
 use stdClass;
 use DateTime;
+
+abstract class LogType {
+    const PAGE_LOAD_EVENT = 1;
+    const WORD_QUERY_EVENT = 2;    
+}
 class StudentExamService{
 
     private $_pdo;
@@ -25,40 +30,32 @@ class StudentExamService{
         JOIN exam_questions as eq ON e.id = eq.exam_id 
         WHERE e.exam_code = ? 
         AND eq.question_code = ?";
+                
+        $results01 = $this->_pdo->query($querySQL01,[$sunnetData->exam_code,$sunnetData->exam_question_code])->first();
         
-        
-        $results_01 = $this->_pdo->query($querySQL01,[$sunnetData->exam_code,$sunnetData->exam_question_code])->first();
-        
-        $querySQL02 = "SELECT * 
-        FROM student_query_logs        
-        WHERE exam_id = ? 
-        AND exam_question_id = ? 
-        AND student_code = ? 
-        AND type = 2";        
-
-        $results_02 = $this->_pdo->query($querySQL02,[$results_01->exam_id,
-                                                      $results_01->exam_question_id,
-                                                      $sunnetData->student_code])->all();
-
-        $results->exam_id = $results_01->exam_id;
+        //from sunnetData
         $results->exam_code = $sunnetData->exam_code;
-        $results->exam_question_id = $results_01->exam_question_id;
         $results->exam_question_code = $sunnetData->exam_question_code;
         $results->student_code = $sunnetData->student_code;
-        $results->query_limit = $results_01->query_limit;
-        $results->query_count = count($results_02);
+
+        //from query data
+        $results->exam_id = $results01->exam_id;
+        $results->exam_question_id = $results01->exam_question_id;        
+        $results->query_limit = $results01->query_limit;
+
+        $results->query_count = $this->getStudentQueryWordCount($sunnetData);
 
         $log = [
             'created_at' => $created_at,
             'exam_code' => $sunnetData->exam_code,
             'exam_question_code' => $sunnetData->exam_question_code,
             'student_code' => $sunnetData->student_code,
-            'exam_id' => $sunnetData->exam_id,
-            'exam_question_id' => $sunnetData->exam_question_id,
+            'exam_id' => $results01->exam_id,
+            'exam_question_id' => $results01->exam_question_id,
             'exam_question_word_id' => NULL,
             'word' => NULL,
             'meta_keyword' => NULL,
-            'type' => "1",
+            'type' => LogType::PAGE_LOAD_EVENT,
             'query_word' => NULL,
             'query_time' => $created_at,
         ];
@@ -67,6 +64,24 @@ class StudentExamService{
         $rowCount = $this->_logService->InsertQueryLog($log);
         
         return $results;
+    }
+
+
+    //取得查詢單字次數總計
+    public function getStudentQueryWordCount($sunnetData){
+        $querySQL = "SELECT * 
+        FROM student_query_logs        
+        WHERE exam_code = ? 
+        AND exam_question_code = ? 
+        AND student_code = ? 
+        AND type = ?";        
+
+        $results = $this->_pdo->query($querySQL,[$sunnetData->exam_code,
+                                                      $sunnetData->exam_question_code,
+                                                      $sunnetData->student_code,
+                                                      LogType::WORD_QUERY_EVENT
+                                                      ])->all();
+        return count($results);
     }
 
 }
