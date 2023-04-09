@@ -2,16 +2,18 @@
 namespace Services;
 
 use stdClass;
-
+use DateTime;
 class ApiService{
 
     private $_pdo;
-
+    private $_logService;
     
-    public function __construct($pdo) {
+    public function __construct($pdo,$logService) {
         $this->_pdo = $pdo;
+        $this->_logService = $logService;
     }
 
+    //取得字典單字清單
     public function getDictWordsList($exam_id,$exam_question_id)
     {
         $querySQL = "SELECT id as value,word as label
@@ -39,70 +41,79 @@ class ApiService{
         return json_encode($results);
     }
 
-    public function queryWord()
+    //使用者查詢單字
+    public function queryWord($exam_id,$exam_code,$exam_question_id,$exam_question_code,$exam_question_word_id,$query_word,$student_code)
     {
-        //待寫
-        // $headerAuth = $request->header('Authorization', '');
-        // $formData = $request->all();
-        // $created_at = new DateTime();
 
-        // $queryData = DB::table('exam_question_words')
-        //     ->selectRaw('word,meta_keyword')
-        //     ->where('exam_id', '=', $formData["exam_id"])
-        //     ->where('exam_question_id', '=', $formData["exam_question_id"])
-        //     ->where('id', '=', $formData["exam_question_word_id"])               
-        //     ->first();
+        $created_at = (new DateTime('now'))->format('Y-m-d H:i:s');
+        
+        
+        $querySQL = "SELECT word,meta_keyword
+        FROM exam_question_words        
+        WHERE exam_id = ? 
+        AND exam_question_id = ?  
+        AND id = ?
+        ";
 
-        // try {
+        $queryData = $this->_pdo->query($querySQL,[$exam_id,
+                                                 $exam_question_id,                                                 
+                                                 $exam_question_word_id])->first();
+        // print_r($queryData->word);
+        // exit;
 
-        //     $log = [
-        //         'created_at' => $created_at,
-        //         'exam_code' => $formData["exam_code"],
-        //         'exam_question_code' => $formData["exam_question_code"],
-        //         'student_code' => $formData["student_code"],
-        //         'exam_id' => $formData["exam_id"],
-        //         'exam_question_id' => $formData["exam_question_id"],
-        //         'exam_question_word_id' => $formData["exam_question_word_id"],
-        //         'word' => $queryData->word,
-        //         'meta_keyword' => $queryData->meta_keyword,
-        //         'type' => "2",
-        //         'query_word' => $formData["query_word"],
-        //         'query_time' => $created_at,
-        //     ];
-        //     $queryStatus = $this->InsertQueryLog($log);
+        $log = [
+            'created_at' => $created_at,
+            'exam_code' => $exam_code,
+            'exam_question_code' => $exam_question_code,
+            'student_code' => $student_code,
+            'exam_id' => $exam_id,
+            'exam_question_id' => $exam_question_id,
+            'exam_question_word_id' => $exam_question_word_id,
+            'word' => $queryData->word,
+            'meta_keyword' => $queryData->meta_keyword,
+            'type' => "2",
+            'query_word' => $query_word,
+            'query_time' => $created_at,
+        ];
 
-        //     if ($queryStatus) {
+        //$rowCount = $this->InsertQueryLog($log);
+        $rowCount = $this->_logService->InsertQueryLog($log);
+        
+        if ($rowCount) {
 
-        //         DB::commit();
+            $querySQL = "SELECT part_of_speech,chinese_description
+            FROM exam_question_words_description as eqwd    
+            WHERE exam_id = ? 
+            AND exam_question_id = ?              
+            AND eqwd.word_id = ?                        
+            ";
 
-        //         $word = DB::table('exam_question_words')
-        //             ->where('exam_question_words.id', '=', $formData["exam_question_word_id"])
-        //             ->first();
+            $queryData02 = $this->_pdo->query($querySQL,[$exam_id,
+                                                         $exam_question_id,                                                 
+                                                         $exam_question_word_id])->all();
+            // print_r($queryData02);
+            // exit;
+            // $words_description = DB::table('exam_question_words_description')
+            //     ->select('part_of_speech', 'chinese_description')
+            //     ->where('eqwd.word_id', '=', $exam_question_word_id")
+            //     ->get();
 
-        //         $words_description = DB::table('exam_question_words_description')
-        //             ->select('part_of_speech', 'chinese_description')
-        //             ->where('exam_question_words_description.word_id', '=', $formData["exam_question_word_id"])
-        //             ->get();
-
-        //         $data = [
-        //             "id" => $word->id,
-        //             "word" => $word->word,
-        //             "meta_keyword" => $word->meta_keyword,
-        //             "words_description" => $words_description->toArray()
-        //         ];
-
-        //         return response()->json($data);
-        //     } else {
-        //         DB::rollBack();
-        //         return response()->json("N");
-        //     }
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     echo $e;
-        //     // something went wrong
-        // }
+            $data = [
+                "id" => $exam_question_word_id,
+                "word" => $queryData->word,
+                "meta_keyword" => $queryData->meta_keyword,
+                "words_description" => $queryData02
+            ];
+            //print_r( json_encode($data));
+            //exit;
+            return json_encode($data);
+        } else {
+            //DB::rollBack();
+            //return response()->json("N");
+        }     
     }
 
+    //取得使用者查詢單字歷史清單
     public function getQueryWordHistoryList($exam_id,$exam_question_id,$student_code)
     {
 
@@ -115,12 +126,9 @@ class ApiService{
         ORDER BY created_at desc
         ";
 
-
-
         $words = $this->_pdo->query($querySQL,[$exam_id,
-                                                 $exam_question_id,
-                                                 $student_code])->all();
-
+                                    $exam_question_id,
+                                    $student_code])->all();
         
         if(count($words) == 0)
         {
@@ -147,37 +155,7 @@ class ApiService{
         }
 
         return json_encode($resData);
-        
 
     }
-
-    public function InsertQueryLog($log)
-    {
-        //待寫
-        // $queryStatus = DB::table('student_query_logs')->insert(
-        //     [
-        //         'created_at' => $log["created_at"],
-        //         'exam_code' => $log["exam_code"],
-        //         'exam_question_code' => $log["exam_question_code"],
-        //         'student_code' => $log["student_code"],
-        //         'exam_id' => $log["exam_id"],
-        //         'exam_question_id' => $log["exam_question_id"],
-        //         'exam_question_word_id' => $log["exam_question_word_id"],
-        //         'word' => $log["word"],
-        //         'meta_keyword' => $log["meta_keyword"],                
-        //         'type' => $log["type"],
-        //         'query_word' => $log["query_word"],
-        //         'query_time' => $log["query_time"],
-        //     ]
-
-
-
-
-        // );
-        // return $queryStatus;
-    }
-
 
 }
-
-?>

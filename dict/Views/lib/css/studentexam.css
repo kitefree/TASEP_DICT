@@ -1,0 +1,43 @@
+.tasep_dict_container{
+    background: #EAF1FE;
+    border: 0.5px solid #D7DFF1;
+    border-radius: 8px;
+    position: relative;
+}
+.tasep_dict_query_limit_text{
+    font-family: MicrosoftJhengHeiBold;
+    font-size: 18px;
+    color: #6186C6;
+    letter-spacing: 0;
+    text-align: right;
+    line-height: 25px;
+    font-weight: 700;
+}
+.tasep_dict_query_limit_number{
+    font-family: Arial-Black;
+    font-size: 24px;
+    color: #5F8DDA;
+    letter-spacing: 0;
+    font-weight: 900;
+}
+
+.tasep_dict_circle{
+  position: absolute;
+  top: -22px;
+  left: 22px;
+  width: 62px;
+  height: 62px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  z-index: 2;
+}
+.tasep_dict_icon {
+    background-image: url('../../images/bitmap.png');
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    width: 48px;    
+    height: 48px;
+    z-index: 2;
+}

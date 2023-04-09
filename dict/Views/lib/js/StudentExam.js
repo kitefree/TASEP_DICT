@@ -136,7 +136,7 @@ function setAutocomplete() {
 
 function reqQueryWord(formData) {
 
-    axios.get('/StudentExam/queryWord', {
+    axios.get('../api.php?api_name=queryWord', {
             params: formData
         })
         .then(function(response) {
@@ -170,10 +170,11 @@ function addQueryRecord(exam_question_word_id) {
 function updateQueryQuota() {
     let elementQueryCount = document.getElementById("query_count");
     let elementQueryLimit = document.getElementById("query_limit");
-    let elementSpanQueryLimit = document.getElementById("span_query_limit");
+    let elementSpanQueryLimit = document.getElementsByClassName("tasep_dict_query_limit");
 
     let quota = elementQueryLimit.value - elementQueryCount.value;
-    elementSpanQueryLimit.innerHTML = `剩餘${quota}次`;
+    elementSpanQueryLimit.innerHTML = `剩餘查詢次數：<span class="tasep_dict_query_limit_number">${quota}</span>次`;
+    
 
     if (quota == 0) {
         document.getElementById("txtSearch").disabled = true;

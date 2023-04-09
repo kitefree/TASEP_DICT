@@ -2,18 +2,22 @@
 namespace Services;
 
 use stdClass;
-
+use DateTime;
 class StudentExamService{
 
     private $_pdo;
-
+    private $_logService;
     
-    public function __construct($pdo) {
+    public function __construct($pdo,$logService) {
         $this->_pdo = $pdo;
+        $this->_logService = $logService;
     }
 
+    //頁面載入相關數據準備
     public function pageLoad($sunnetData)
     {        
+        $created_at = (new DateTime('now'))->format('Y-m-d H:i:s');
+
         $results = new StdClass();
 
         $querySQL01 = "SELECT e.id as exam_id,e.exam_code,eq.id as exam_question_id, eq.question_code,eq.query_limit 
@@ -43,33 +47,26 @@ class StudentExamService{
         $results->student_code = $sunnetData->student_code;
         $results->query_limit = $results_01->query_limit;
         $results->query_count = count($results_02);
+
+        $log = [
+            'created_at' => $created_at,
+            'exam_code' => $sunnetData->exam_code,
+            'exam_question_code' => $sunnetData->exam_question_code,
+            'student_code' => $sunnetData->student_code,
+            'exam_id' => $sunnetData->exam_id,
+            'exam_question_id' => $sunnetData->exam_question_id,
+            'exam_question_word_id' => NULL,
+            'word' => NULL,
+            'meta_keyword' => NULL,
+            'type' => "1",
+            'query_word' => NULL,
+            'query_time' => $created_at,
+        ];
+        
+        //$rowCount = $this->InsertQueryLog($log);
+        $rowCount = $this->_logService->InsertQueryLog($log);
+        
         return $results;
-    }
-
-    public function InsertQueryLog($log)
-    {
-        //待寫
-        // $queryStatus = DB::table('student_query_logs')->insert(
-        //     [
-        //         'created_at' => $log["created_at"],
-        //         'exam_code' => $log["exam_code"],
-        //         'exam_question_code' => $log["exam_question_code"],
-        //         'student_code' => $log["student_code"],
-        //         'exam_id' => $log["exam_id"],
-        //         'exam_question_id' => $log["exam_question_id"],
-        //         'exam_question_word_id' => $log["exam_question_word_id"],
-        //         'word' => $log["word"],
-        //         'meta_keyword' => $log["meta_keyword"],                
-        //         'type' => $log["type"],
-        //         'query_word' => $log["query_word"],
-        //         'query_time' => $log["query_time"],
-        //     ]
-
-
-
-
-        // );
-        // return $queryStatus;
     }
 
 }
