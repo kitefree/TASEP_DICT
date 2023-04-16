@@ -170,8 +170,32 @@ async function setAutocomplete(dataSource) {
         //source: tasep_dict_global.dataSource,
         source: async function (request, response) {
             try{
-                var results = $.ui.autocomplete.filter(dataSource, request.term);
+                let results = $.ui.autocomplete.filter(dataSource, request.term);
+                
                 await response(results.slice(0, this.options.maxResults));
+
+                // let results02 = results.slice(0, this.options.maxResults); 
+                // let results03 = $.map( results02, function( item ) {
+                //     let formatLabel = item.label;
+
+                //     if(item.label.indexOf('...') >-1)
+                //     {
+                //         formatLabel = item.label.split('...')[0] + "      " + item.label.split('...')[1];
+                //     }
+
+                //     return {
+                //         exam_code:item.exam_code,
+                //         exam_question_code:item.exam_question_code,
+                //         word:item.word,
+                //         word_id:item.word_id,
+                //         descriptions:item.descriptions,
+                //         label: formatLabel,
+                //         value: item.value
+                // }}); 
+                // await response(results03);
+
+                
+                
             }                
             catch(error)
             {
@@ -200,8 +224,9 @@ async function setAutocomplete(dataSource) {
             }
 
             //2. 字串處理
-            if (ui.item.label.indexOf("...") > -1) {
-                $('#txtSearch').val(ui.item.label.split('...')[0]);
+            if (ui.item.label.indexOf('(') > -1 && ui.item.label.indexOf(')') > -1) {
+                let endindex = ui.item.label.indexOf('(') -1;// 最後有多一個空白，再減1
+                $('#txtSearch').val(ui.item.label.substring(0,endindex));
             }
             else {
                 $('#txtSearch').val(ui.item.label);

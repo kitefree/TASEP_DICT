@@ -1,4 +1,3 @@
-
 <?php
 /*
 旭聯系統環境
@@ -24,25 +23,15 @@ spl_autoload_register(function ($class) {
     }
 });
 
-
 use Common\DBHelper;
 use Configs\GlobalConfig;
 use Services\LogService;
 use Services\StudentExamService;
 
-//include_once "../Config/DatabaseConfig.php";
-//include_once "../Common/DBHelper.php";
-//include_once "../Services/LogService.php";
-//include_once "../Services/StudentExamService.php";
-
-
 
 $results = new stdClass();
 
 $sunnetData = new stdClass();
-
-
-
 
 
 /* 旭聯協助傳入資訊 START */
@@ -61,14 +50,10 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 $randomVersionNumber = time();
 
-//$pdo = new DBHelper(TASEP_DICT_DB_HOST, TASEP_DICT_DB_DATABASE, TASEP_DICT_DB_USERNAME, TASEP_DICT_DB_PASSWORD);
-
-
-
-$pdo = new DBHelper(GlobalConfig::$DBConfig["TASEP_DICT_DB_HOST"],
-                    GlobalConfig::$DBConfig["TASEP_DICT_DB_DATABASE"],
-                    GlobalConfig::$DBConfig["TASEP_DICT_DB_USERNAME"],
-                    GlobalConfig::$DBConfig["TASEP_DICT_DB_PASSWORD"]);
+$pdo = new DBHelper(GlobalConfig::$DBConfig["DB_HOST"],
+                    GlobalConfig::$DBConfig["DB_DATABASE"],
+                    GlobalConfig::$DBConfig["DB_USERNAME"],
+                    GlobalConfig::$DBConfig["DB_PASSWORD"]);
 
 
 $logService = new LogService($pdo);

@@ -1,7 +1,9 @@
 <?php
 namespace Services;
 
-use stdClass;
+/* PHP 內鍵 Start */
+use DateTime;
+/* PHP 內鍵 END Start */
 
 class LogService{
 

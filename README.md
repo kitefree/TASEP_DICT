@@ -22,15 +22,15 @@ movies\
 
 ### 1.1.4. 測試URL
 
-真實學生url
+正式考生url
 
 ```html
 http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2247&exam_question_code=R22018&exam_sub_question_code=R22018-1&student_code=s111123450017
 ```
 
-後台預覽url
+後台預覽url (for 測試用)
 
-```
+```html
 http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam_question_code=R22018&exam_sub_question_code=R22018-1&student_code=A001
 ```
 
@@ -70,7 +70,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 4. 更新autocomplete 套件
     使用者可以使用「向下鍵↓」，進行挑選項目。
 
-### 1.2.3. 20230.04.19 v3
+### 1.2.3. 20230.04.19 v7
 
 1. 修正pdo資源釋放
 
@@ -110,11 +110,11 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 5. 題組預覽字典之功能，假資料調整與修正。
 
-   for `exam_code=tasep_test&exam_question_code=R22018`之條件，請再協助更新`SQL資料`。
+   for `exam_code=tasep_test&exam_question_code=R22018`之條件，資料庫補齊假資料。
 
-6. 子題代號新增
+6. LOG 檔 新增`子題代號`欄位
 
-   透過get 參數`exam_sub_question_code=R22018-1`取得子題代號，並存入資料庫進行記錄。
+   透過get 參數`exam_sub_question_code=R22018-1`取得子題代號，並存入資料庫。
 
 7. 隱藏放大鏡ICON 功能
 
@@ -122,7 +122,36 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 8. 時區設定調整
 
-   在`config\database.php`中加入`date_default_timezone_set('Asia/Taipei');`，log時間才會與台灣時間切齊。
+   在`configs\GlobalConfig.php`中加入`date_default_timezone_set('Asia/Taipei');`，log時間與台灣時間切齊。
+
+9. 調整架構
+
+   1. 使用`spl_autoload_register` 取代`include`方式。
+   2. `LogType` 抽離至`Enums`資料夾下進行共用。
+
+10. 調整下拉選單出現的格式
+
+    原為`word...words` 改為`word (words)`
+
+11. 調整mysql索引
+
+    1. `student_query_logs` table
+
+       add index ：`exam_code`、`exam_question_code`、`student_code`、`type`
+
+    2. `exam_question_words` table
+
+       add index: `id`、`exam_id`、`exam_question_id`
+
+    3. `exam_question_words_description` table
+
+       add index: `exam_id`、`exam_question_id`、`word_id`
+
+12. 新增字典緩存機制
+
+    透過`localstorage`方式緩存10分鐘字典資料。超過10分鐘則重新與伺服器再取得資料。
+
+
 
 ### 1.2.3. Todo list
 

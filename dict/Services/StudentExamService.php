@@ -1,13 +1,15 @@
 <?php
 namespace Services;
 
+/* 專案使用 Start */
+use Enums\LogType;
+/* 專案使用 End */
+
+/* PHP 內鍵 Start */
 use stdClass;
 use DateTime;
+/* PHP 內鍵 END Start */
 
-abstract class LogType {
-    const PAGE_LOAD_EVENT = 1;
-    const WORD_QUERY_EVENT = 2;    
-}
 class StudentExamService{
 
     private $_pdo;

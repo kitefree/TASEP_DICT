@@ -1,6 +1,11 @@
 <?php
 namespace Common;
+
+/* PHP 內鍵 Start */
 use PDO,PDOException;
+/* PHP 內鍵 END Start */
+
+
 class DBHelper
 {
     private $pdo;

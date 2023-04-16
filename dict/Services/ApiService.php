@@ -1,13 +1,14 @@
 <?php
 namespace Services;
 
+/* 專案使用 Start */
+use Enums\LogType;
+/* 專案使用 End */
+
+/* PHP 內鍵 Start */
 use stdClass;
 use DateTime;
-
-abstract class LogType {
-    const PAGE_LOAD_EVENT = 1;
-    const WORD_QUERY_EVENT = 2;    
-}
+/* PHP 內鍵 END Start */
 
 class ApiService{
 
@@ -30,7 +31,7 @@ class ApiService{
         eqw.meta_keyword,
         CASE
             WHEN eqw.meta_keyword IS NULL THEN LOWER(eqw.word)
-            WHEN eqw.meta_keyword IS NOT NULL THEN CONCAT(LOWER(eqw.word), '...', IFNULL(LOWER(eqw.meta_keyword),''))
+            WHEN eqw.meta_keyword IS NOT NULL THEN CONCAT(LOWER(eqw.word), ' (',IFNULL(LOWER(eqw.meta_keyword),''),')')            
         END AS label,    
         eqw.id AS value,                 
         JSON_ARRAYAGG(JSON_OBJECT('part_of_speech',eqwd.part_of_speech,'chinese_description',eqwd.chinese_description)) as descriptions              
@@ -148,7 +149,7 @@ class ApiService{
             logs.meta_keyword,
             CASE
                 WHEN logs.meta_keyword IS NULL THEN LOWER(logs.word)
-                WHEN logs.meta_keyword IS NOT NULL THEN CONCAT(LOWER(logs.word), '...', IFNULL(LOWER(logs.meta_keyword),''))
+                WHEN logs.meta_keyword IS NOT NULL THEN CONCAT(LOWER(logs.word), ' (',IFNULL(LOWER(logs.meta_keyword),''),')')
             END AS label,    
             logs.exam_question_word_id AS value,                 
             JSON_ARRAYAGG(JSON_OBJECT('part_of_speech',eqwd.part_of_speech,'chinese_description',eqwd.chinese_description)) as descriptions              
