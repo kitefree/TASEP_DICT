@@ -19,6 +19,7 @@ $api_name = $_GET["api_name"];
 
 switch($api_name)
 {
+     //取得使用者查詢單字歷史清單,依照施測代號、題組名稱、考生代號取得查詢歷程
     case "getStudentQueryWordHistoryList":
         $exam_code = $_GET["exam_code"];
         $exam_question_code = $_GET["exam_question_code"];   
@@ -27,40 +28,44 @@ switch($api_name)
         $results = $apiService->getStudentQueryWordHistoryList($exam_code,$exam_question_code,$student_code);
         echo $results;
         break;
+
+    //取得字典單字清單,依照施測代號、題組名稱取得字典資料
     case "getDictWordsList":
         $exam_code = $_GET["exam_code"];
         $exam_question_code = $_GET["exam_question_code"];        
         $results = $apiService->getDictWordsList($exam_code,$exam_question_code);
         echo $results;
         break;
-    case "queryWord":
-//印出所有 GET 的資料
-// echo "GET data:<br>";
-// foreach ($_GET as $key => $value) {
-//     echo $key . " = " . $value . "<br>";
-// }
 
-// //印出所有 POST 的資料
-// echo "POST data:<br>";
-// foreach ($_POST as $key => $value) {
-//     echo $key . " = " . $value . "<br>";
-// }
-// exit;
-        //http://localhost/TASEP_DICT/dict/api.php?api_name=queryWord&exam_id=1&exam_question_id=1&exam_question_word_id=1
+    //使用者查詢單字
+    case "queryWord":        
         $exam_id = $_GET["exam_id"];
         $exam_code = $_GET["exam_code"];
 
         $exam_question_id = $_GET["exam_question_id"];        
         $exam_question_code = $_GET["exam_question_code"];
+
+        $exam_sub_question_code = $_GET["exam_sub_question_code"];
         
         $exam_question_word_id = $_GET["exam_question_word_id"];    
         $query_word = $_GET["query_word"];                        
 
         $student_code = $_GET["student_code"];
 
-        $results = $apiService->queryWord($exam_id,$exam_code,$exam_question_id,$exam_question_code,$exam_question_word_id,$query_word,$student_code);
+        $results = $apiService->queryWord($exam_id,$exam_code,$exam_question_id,$exam_question_code,$exam_sub_question_code,$exam_question_word_id,$query_word,$student_code);
         echo $results;
-        break;        
+        break;
+
+    //取得查詢單字次數總計，依照施測代號、題組名稱、考生名稱取得查詢次數 
+    case "getStudentQueryWordCount":        
+        $exam_code = $_GET["exam_code"];
+        $exam_question_code = $_GET["exam_question_code"];
+        $student_code = $_GET["student_code"];        
+        $results = $apiService->getStudentQueryWordCount($exam_code,$exam_question_code,$student_code);
+        echo $results;
+        break;      
 }
+
+$pdo->close();
 
 ?>

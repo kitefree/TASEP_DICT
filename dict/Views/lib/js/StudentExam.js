@@ -8,16 +8,11 @@ tasep_dict_global = {
 
 window.onload = async function () {
 
-    //1.取得字典單字
-    tasep_dict_global.dataSource = await getDictWordsList();
-
-    //整理格式 將字串轉為JSON物件
-    tasep_dict_global.dataSource.forEach(function (value, index, array) {
-        array[index]["descriptions"] = JSON.parse(array[index]["descriptions"]);
-    });
+    //字典資料啟用緩存機制，減少存取資料庫次數
+    await dictUseCache(true);
 
     //設定智能提示清單
-    setAutocomplete(tasep_dict_global.dataSource);
+    await setAutocomplete(tasep_dict_global.dataSource);
 
     //2.取得學生查詢單字記錄
     tasep_dict_global.studentQueryWordHistoryList = await getStudentQueryWordHistoryList();
@@ -35,6 +30,72 @@ window.onload = async function () {
     let elementQueryCount = document.getElementById("query_count");
     renderQueryQuota(elementQueryLimit, elementQueryCount);
 
+
+}
+
+//字典資料緩存機制
+async function dictUseCache(enable){
+    if(enable == true)
+    {
+        let exam_code = document.getElementById("exam_code").value;
+        let exam_question_code = document.getElementById("exam_question_code").value;
+        let diff_min = 10 * 60 * 1000;//10 min
+
+        if(localStorage.getItem(`tasep_dict_${exam_code}_${exam_question_code}_data`) == null){
+            //1.取得字典單字
+            tasep_dict_global.dataSource = await getDictWordsList();
+            
+            //整理格式 將字串轉為JSON物件
+            tasep_dict_global.dataSource.forEach(function (value, index, array) {
+                array[index]["descriptions"] = JSON.parse(array[index]["descriptions"]);
+            });
+    
+            let expiryTime = (new Date()).getTime() + diff_min;
+            const data = {
+                "expiryTime":expiryTime,
+                "data":tasep_dict_global.dataSource
+            };
+            localStorage.setItem(`tasep_dict_${exam_code}_${exam_question_code}_data`, JSON.stringify(data));        
+            console.log("init localstorage");
+            
+        }
+        else{
+
+            console.log("load data from localstorage");
+            // 從 localStorage 中取回資料並解析為 JSON 格式
+            const storedData = localStorage.getItem(`tasep_dict_${exam_code}_${exam_question_code}_data`);
+            const parsedData = JSON.parse(storedData);        
+
+            // 取得當前時間
+            let now = new Date();
+            
+            let expiryTime = parsedData.expiryTime;
+            
+            if (expiryTime - now.getTime() >0) {
+                tasep_dict_global.dataSource = await parsedData.data;
+                console.log("load data from locastorage2");
+            } else {            
+                console.log("localstorage data expiry");
+                // 清空 localStorage 中的所有資料
+                localStorage.clear();
+                await dictUseCache(enable);
+            }
+
+            
+        }
+    }
+    else{
+        //1.取得字典單字
+        tasep_dict_global.dataSource = await getDictWordsList();
+
+        //整理格式 將字串轉為JSON物件
+        tasep_dict_global.dataSource.forEach(function (value, index, array) {
+            array[index]["descriptions"] = JSON.parse(array[index]["descriptions"]);
+        });
+
+    }
+    
+    
 
 }
 
@@ -58,6 +119,7 @@ function getFormDataFormat(record) {
     let exam_question_word_id = '';
     let exam_code = document.getElementById("exam_code").value;
     let exam_question_code = document.getElementById("exam_question_code").value;
+    let exam_sub_question_code = document.getElementById("exam_sub_question_code").value;
     let student_code = document.getElementById("student_code").value;
     let query_word = '';
 
@@ -71,6 +133,7 @@ function getFormDataFormat(record) {
         "exam_code": exam_code,//施測編號        
         "exam_question_id": exam_question_id,
         "exam_question_code": exam_question_code,//題組編號                
+        "exam_sub_question_code": exam_sub_question_code,//子題編號        
         "student_code": student_code,//考生編號        
         "exam_question_word_id": exam_question_word_id,
         "query_word": query_word,//使用者查詢單字
@@ -93,7 +156,7 @@ async function getDictWordsList() {
 
 
 //設定智能提示清單
-function setAutocomplete(dataSource) {
+async function setAutocomplete(dataSource) {
 
 
     //todo set tasep_dict_global.dataSource in localstorage
@@ -101,9 +164,9 @@ function setAutocomplete(dataSource) {
         minLength: 1,//設定關鍵字觸發字元數量
         maxResults: 10,//設定清單出現數量
         //source: tasep_dict_global.dataSource,
-        source: function (request, response) {
+        source: async function (request, response) {
             var results = $.ui.autocomplete.filter(dataSource, request.term);
-            response(results.slice(0, this.options.maxResults));
+            await response(results.slice(0, this.options.maxResults));
         },
 
         focus: function (event, ui) {
@@ -112,10 +175,21 @@ function setAutocomplete(dataSource) {
             // console.log(ui.item.label);
             // console.log(ui.item.value);
         },
-        select: function (event, ui) {
+        select: async function (event, ui) {
 
             event.preventDefault();
 
+            //1.優先檢查後端查詢數量
+            let isQueryCountCorrect = await checkQueryCountCorrect();
+            if (isQueryCountCorrect == false)
+            {
+                alert('剩餘查詢次數異常，請點擊【確定】後，將自動刷新頁面。');
+                // 強制瀏覽器重新下載資源，並刷新頁面
+                location.href = location.href;
+                return;
+            }
+
+            //2. 字串處理
             if (ui.item.label.indexOf("...") > -1) {
                 $('#txtSearch').val(ui.item.label.split('...')[0]);
             }
@@ -123,16 +197,41 @@ function setAutocomplete(dataSource) {
                 $('#txtSearch').val(ui.item.label);
             }
 
+            //3. 在client檢查是否曾經查詢過此單字
             let hasSearchedBefore = checkSearchedBefore(ui.item);
             
             if (hasSearchedBefore == false) {            
-                addStudentQueryWordRecord(ui.item);
-                
+                addStudentQueryWordRecord(ui.item);                
                 return;
             }
 
         }
     });
+}
+
+
+//檢查考生查詢剩餘數量
+async function checkQueryCountCorrect()
+{
+
+    let formData = getFormDataFormat();
+    
+    const response = await axios.get('../api.php?api_name=getStudentQueryWordCount', {
+        params: formData
+    });
+
+    let queryCount = response.data;
+    let elementQueryCount = document.getElementById("query_count");
+
+    if (queryCount != parseInt(elementQueryCount.value, 10))
+    {
+        return false;
+    }
+    else {
+        return true;
+    }
+    //return response.data;
+   
 }
 
 function checkSearchedBefore(ui_item)
@@ -166,7 +265,7 @@ function addStudentQueryWordRecord(record) {
     //client update
     tasep_dict_global.studentQueryWordHistoryList.push(record);
     renderWordListRow(record);
-    renderQueryQuota(elementQueryLimit, elementQueryCount)
+    renderQueryQuota(elementQueryLimit, elementQueryCount);
     
     //server update
     sendStudentQueryWordRecord(record);
@@ -183,7 +282,13 @@ function sendStudentQueryWordRecord(record) {
         params: formData
     })
         .then(function (response) {                        
-            let wordInfo = response.data;
+
+            let count = response.data;
+            //渲染更新剩餘數量
+            let elementQueryLimit = document.getElementById("query_limit");
+            let elementQueryCount = document.getElementById("query_count");
+            elementQueryCount.value = count;
+            renderQueryQuota(elementQueryLimit,elementQueryCount);
             //renderWordListRow(wordInfo);
         })
         .catch((error) => console.log(error))

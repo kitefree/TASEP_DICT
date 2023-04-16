@@ -21,8 +21,10 @@ class StudentExamService{
     //頁面載入相關數據準備
     public function pageLoad($sunnetData)
     {        
-        $created_at = (new DateTime('now'))->format('Y-m-d H:i:s');
+        // print_r($sunnetData);
+        // exit;
 
+        //1. 組完成的資訊render回前端
         $results = new StdClass();
 
         $querySQL01 = "SELECT e.id as exam_id,e.exam_code,eq.id as exam_question_id, eq.question_code,eq.query_limit 
@@ -36,19 +38,31 @@ class StudentExamService{
         //from sunnetData
         $results->exam_code = $sunnetData->exam_code;
         $results->exam_question_code = $sunnetData->exam_question_code;
+        $results->exam_sub_question_code = $sunnetData->exam_sub_question_code;
         $results->student_code = $sunnetData->student_code;
 
         //from query data
         $results->exam_id = $results01->exam_id;
-        $results->exam_question_id = $results01->exam_question_id;        
-        $results->query_limit = $results01->query_limit;
+        $results->exam_question_id = $results01->exam_question_id;
+        if($sunnetData->exam_code == 'tasep_test')    
+        {
+            $results->query_limit = 999;
+        }
+        else {
+            $results->query_limit = $results01->query_limit;
+        }
+        
 
         $results->query_count = $this->getStudentQueryWordCount($sunnetData);
+        
 
+        //2.寫log
+        $created_at = (new DateTime('now'))->format('Y-m-d H:i:s');
         $log = [
             'created_at' => $created_at,
             'exam_code' => $sunnetData->exam_code,
             'exam_question_code' => $sunnetData->exam_question_code,
+            'exam_sub_question_code' => $sunnetData->exam_sub_question_code,
             'student_code' => $sunnetData->student_code,
             'exam_id' => $results01->exam_id,
             'exam_question_id' => $results01->exam_question_id,
@@ -62,14 +76,15 @@ class StudentExamService{
         
         //$rowCount = $this->InsertQueryLog($log);
         $rowCount = $this->_logService->InsertQueryLog($log);
-        
+
         return $results;
     }
 
 
     //取得查詢單字次數總計
     public function getStudentQueryWordCount($sunnetData){
-        $querySQL = "SELECT * 
+
+        $querySQL = "SELECT id 
         FROM student_query_logs        
         WHERE exam_code = ? 
         AND exam_question_code = ? 
@@ -81,6 +96,7 @@ class StudentExamService{
                                                       $sunnetData->student_code,
                                                       LogType::WORD_QUERY_EVENT
                                                       ])->all();
+        
         return count($results);
     }
 

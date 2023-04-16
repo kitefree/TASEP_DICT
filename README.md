@@ -22,8 +22,17 @@ movies\
 
 ### 1.1.4. 測試URL
 
+真實學生url
+
 ```html
 http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2247&exam_question_code=R22018&exam_sub_question_code=R22018-1&student_code=s111123450017
+
+```
+
+後台預覽url
+
+```
+http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam_question_code=R22018&exam_sub_question_code=R22018-1&student_code=A001
 ```
 
 
@@ -49,25 +58,78 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ### 1.2.2. 2023.04.09 v2
 
-1. SQL LOG 實作
+1. 學生查詢字典之LOG 紀錄實作
    
-   > 已完成
+2. 檔案拆分架構
    
-2. 檔案拆分架構會再調整
-   
-   >部分完成，未來考慮加入composer、controller 等做法。
+   部分完成，未來考慮加入composer、controller 等做法。
    
 3. 廠商mockup進行套版
    
-   >部分完成，`表格`、`智能提示清單` style樣式待廠商提供
+   部分完成，`表格`、`智能提示清單` style樣式待廠商提供
    
-4. autocomplete 套件置換
-    目標：使用者可以使用「向下鍵↓」，進行選項選擇的套件。
-    
-    >已完成
+4. 更新autocomplete 套件
+    使用者可以使用「向下鍵↓」，進行挑選項目。
 
+### 1.2.3. 20230.04.19 v3
+
+1. 修正pdo資源釋放
+
+   使用完pdo物件後，應透過null方式關閉mysql connection 連結。
+
+2. 修正CSS樣式
+
+   針對`表格`樣式進行調整，`智能提示清單`樣式暫時不調整。表格樣式調整如下：
+
+    ```css
+    .tasep_dict_table thead th{
+        background-color:#4568a0;
+        color:#FFFFFF;
+    }
+    .tasep_dict_table tr:nth-child(even) {
+        background: #f5f5f5;
+    }
+    .tasep_dict_table tr:nth-child(odd) {
+   
+        background: #fdfdfd;
+    }
+    ```
+
+3. 修正同時開二個分頁bug之問題
+
+   每次送出單字前，優先判斷server端的實際剩餘數量。如果數量不一致，則網頁會進行提示比重新整理。
+
+4. 針對js、css緩存問題進行改善
+
+   程式版更時，造成程式無法正常執行之問題，因此，優先將客製化部分進行修正，調整如下：
+
+   ```html
+       <link href="./lib/css/studentexam.css?v=<?php echo $randomVersionNumber;?>" rel="stylesheet">
+       <script src="./lib/js/StudentExam.js?v=<?php echo $randomVersionNumber;?>"></script>
+   ```
+
+
+5. 題組預覽字典之功能，假資料調整與修正。
+
+   for `exam_code=tasep_test&exam_question_code=R22018`之條件，請再協助更新`SQL資料`。
+
+6. 子題代號新增
+
+   透過get 參數`exam_sub_question_code=R22018-1`取得子題代號，並存入資料庫進行記錄。
+
+7. 隱藏放大鏡ICON 功能
+
+   放大鏡功能在流程上不會使用到，先隱藏。
+
+8. 時區設定調整
+
+   在`config\database.php`中加入`date_default_timezone_set('Asia/Taipei');`，log時間才會與台灣時間切齊。
 
 ### 1.2.3. Todo list
 
 1 .資料表結構有可能會再調整
 2 .會先預做一隻清db log table 的php，因為現在我無法操作資料庫，要測試功能會有些麻煩。
+
+3.檔案拆分架構會再調整
+
+>部分完成，未來考慮加入composer、controller 等做法。

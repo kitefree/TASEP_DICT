@@ -58,6 +58,18 @@
     font-size: 24px;
 }
 
+.tasep_dict_table thead th{
+    background-color:#4568a0;
+    color:#FFFFFF;
+}
+.tasep_dict_table tr:nth-child(even) {
+    background: #f5f5f5;
+}
+.tasep_dict_table tr:nth-child(odd) {
+    
+    background: #fdfdfd;
+}
+
 /* tasep dict css style end */
 
 /* overwrite jquery ui css style begin */
