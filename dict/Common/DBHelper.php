@@ -1,5 +1,6 @@
 <?php
-//namespace Common;
+namespace Common;
+use PDO,PDOException;
 class DBHelper
 {
     private $pdo;

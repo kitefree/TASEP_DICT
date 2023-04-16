@@ -1,0 +1,113 @@
+truncate table exam_question_words;
+truncate table exam_question_words_description;
+
+select * from exam_question_words;
+select * from exam_question_words_description;
+
+select * from exam_question_words_description;
+
+1.匯入 exam_question_words_description;
+
+2.匯入 exam_question_words
+
+3.整理資料
+	要關閉Safe Update Mode 可執行 "SET SQL_SAFE_UPDATES=0" 指令
+	
+	(1)更新meta_keyword 欄位為null
+		select * from exam_question_words where meta_keyword = '無';
+		update exam_question_words set meta_keyword = null where meta_keyword = '無';
+
+
+3.找出重複單字 exam_question_words
+	select *
+	from exam_question_words
+	where word in 
+	(
+		select word from exam_question_words group by word,exam_question_id having count(word) >1
+	)
+	order by exam_question_id,word
+4.移除重複單字 exam_question_words 
+	從源頭excel移除再匯入一次
+
+
+5.找出重複單字 exam_question_words_description
+	select *
+	from exam_question_words_description
+	where word in 
+	(
+		select word from exam_question_words_description group by word,exam_question_id,part_of_speech having count(word) >1
+	)
+	order by exam_question_id,word
+
+6.移除重複單字 exam_question_words_description 
+	從源頭excel移除再匯入一次
+
+
+
+7.更新 word_id exam_question_words_description 
+	/*詞性表找單字表 關聯成功*/
+	select a.exam_id,a.exam_question_id,a.word_id,a.word,a.part_of_speech,a.chinese_description,b.id,b.word,b.meta_keyword
+	from exam_question_words_description a left join exam_question_words b on (a.word = b.word or a.word = b.meta_keyword) and a.exam_id = b.exam_id and a.exam_question_id =  b.exam_question_id;
+
+	/*詞性表找單字表 關聯失敗*/
+	select a.exam_id,a.exam_question_id,a.word_id,a.word,a.part_of_speech,a.chinese_description,b.id,b.word,b.meta_keyword
+	from exam_question_words_description a left join exam_question_words b on (a.word = b.word or a.word = b.meta_keyword) and a.exam_id = b.exam_id and a.exam_question_id =  b.exam_question_id
+	where b.word is null and b.meta_keyword is null;
+
+	/* 針對 word 關聯更新 */
+	update exam_question_words_description a,exam_question_words b set a.word_id = b.id
+	where a.word = b.word and a.exam_id = b.exam_id and a.exam_question_id =  b.exam_question_id;
+
+	/* 針對 meta_keyword 關聯更新 */
+	update exam_question_words_description a,exam_question_words b set a.word_id = b.id
+	where a.word = b.meta_keyword and a.exam_id = b.exam_id and a.exam_question_id =  b.exam_question_id;
+
+
+
+8.找出 word_id 為空的資料 exam_question_words_description 
+
+
+9.確認所有詞性都正確
+	select * 
+	from exam_question_words_description 
+	where part_of_speech not in 
+	(
+		select code_value
+		from code_lists 
+		where code_key = 'pos'
+	)
+
+
+10. 複製到測試施測編號
+
+	/* 單字表複製 */
+	insert into exam_question_words (created_at,exam_id,exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword)
+	select '2022-10-08 13:33:00' as created_at,'999' as exam_id,'900' as exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword
+	from exam_question_words
+	where exam_id = 1 and exam_question_id = 1
+
+	insert into exam_question_words (created_at,exam_id,exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword)
+	select '2022-10-08 13:33:00' as created_at,'999' as exam_id,'901' as exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword
+	from exam_question_words
+	where exam_id = 1 and exam_question_id = 2
+	
+	/* 詞性表複製 */
+	insert into exam_question_words_description(created_at,exam_id,exam_question_id,word_id,word,part_of_speech,chinese_description)
+	select '2022-10-08 13:33:00' as created_at,'999' as exam_id,'900' as exam_question_id,word_id,word,part_of_speech,chinese_description
+	from exam_question_words_description
+	where exam_id = 1 and exam_question_id = 1;
+
+
+	insert into exam_question_words_description(created_at,exam_id,exam_question_id,word_id,word,part_of_speech,chinese_description)
+	select '2022-10-08 13:33:00' as created_at,'999' as exam_id,'901' as exam_question_id,word_id,word,part_of_speech,chinese_description
+	from exam_question_words_description
+	where exam_id = 1 and exam_question_id = 2;	
+	
+	/*更新word_id*/
+	update exam_question_words_description eqwd		
+	join exam_question_words eqw on eqwd.exam_id =eqw.exam_id  and eqwd.exam_question_id = eqw.exam_question_id and eqwd.word = eqw.word 
+    set eqwd.word_id = eqw.id
+	where eqwd.exam_id = 999 and eqwd.exam_question_id = 900;
+	
+	
+	

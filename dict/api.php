@@ -1,14 +1,25 @@
 <?php
-include_once "./Config/database.php";
-include_once "./Common/DBHelper.php";
-include_once "./Services/LogService.php";
-include_once "./Services/ApiService.php";
+spl_autoload_register(function ($class) {
+    // 將命名空間的反斜線轉換為目錄路徑的斜線
+    $path = str_replace('\\', '/', $class);
 
+    // 假設類別檔案都放在 classes 目錄下
+    $file = $path . '.php';
+    
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
 
+use Common\DBHelper;
+use Configs\GlobalConfig;
 use Services\ApiService;
 use Services\LogService;
 
-$pdo = new DBHelper(TASEP_DICT_DB_HOST, TASEP_DICT_DB_DATABASE, TASEP_DICT_DB_USERNAME, TASEP_DICT_DB_PASSWORD);
+$pdo = new DBHelper(GlobalConfig::$DBConfig["TASEP_DICT_DB_HOST"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_DATABASE"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_USERNAME"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_PASSWORD"]);
 
 $logService = new LogService($pdo);
 $apiService = new ApiService($pdo,$logService);
@@ -63,7 +74,10 @@ switch($api_name)
         $student_code = $_GET["student_code"];        
         $results = $apiService->getStudentQueryWordCount($exam_code,$exam_question_code,$student_code);
         echo $results;
-        break;      
+        break;
+    default:
+        echo "參數不正確";
+        break;
 }
 
 $pdo->close();

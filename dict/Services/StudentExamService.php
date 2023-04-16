@@ -34,7 +34,14 @@ class StudentExamService{
         AND eq.question_code = ?";
                 
         $results01 = $this->_pdo->query($querySQL01,[$sunnetData->exam_code,$sunnetData->exam_question_code])->first();
+                
+        if (!isset($results01) || empty($results01)) {
+            echo "參數錯誤";
+            exit;
+        }
+
         
+
         //from sunnetData
         $results->exam_code = $sunnetData->exam_code;
         $results->exam_question_code = $sunnetData->exam_question_code;
@@ -92,10 +99,10 @@ class StudentExamService{
         AND type = ?";        
 
         $results = $this->_pdo->query($querySQL,[$sunnetData->exam_code,
-                                                      $sunnetData->exam_question_code,
-                                                      $sunnetData->student_code,
-                                                      LogType::WORD_QUERY_EVENT
-                                                      ])->all();
+                                                 $sunnetData->exam_question_code,
+                                                 $sunnetData->student_code,
+                                                 LogType::WORD_QUERY_EVENT
+                                                ])->all();
         
         return count($results);
     }

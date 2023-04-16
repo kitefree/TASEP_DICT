@@ -10,7 +10,7 @@ window.onload = async function () {
 
     //字典資料啟用緩存機制，減少存取資料庫次數
     await dictUseCache(true);
-
+    
     //設定智能提示清單
     await setAutocomplete(tasep_dict_global.dataSource);
 
@@ -28,7 +28,11 @@ window.onload = async function () {
     //3.渲染更新剩餘數量
     let elementQueryLimit = document.getElementById("query_limit");
     let elementQueryCount = document.getElementById("query_count");
-    renderQueryQuota(elementQueryLimit, elementQueryCount);
+
+    intQueryLimit = parseInt(elementQueryLimit.value,10);
+    intQueryCount = parseInt(elementQueryCount.value,10);
+
+    renderQueryQuota(intQueryLimit, intQueryCount);
 
 
 }
@@ -56,12 +60,12 @@ async function dictUseCache(enable){
                 "data":tasep_dict_global.dataSource
             };
             localStorage.setItem(`tasep_dict_${exam_code}_${exam_question_code}_data`, JSON.stringify(data));        
-            console.log("init localstorage");
+            //console.log("init localstorage");
             
         }
         else{
 
-            console.log("load data from localstorage");
+            //console.log("load data from localstorage");
             // 從 localStorage 中取回資料並解析為 JSON 格式
             const storedData = localStorage.getItem(`tasep_dict_${exam_code}_${exam_question_code}_data`);
             const parsedData = JSON.parse(storedData);        
@@ -73,9 +77,9 @@ async function dictUseCache(enable){
             
             if (expiryTime - now.getTime() >0) {
                 tasep_dict_global.dataSource = await parsedData.data;
-                console.log("load data from locastorage2");
+                //console.log("load data from locastorage2");
             } else {            
-                console.log("localstorage data expiry");
+                //console.log("localstorage data expiry");
                 // 清空 localStorage 中的所有資料
                 localStorage.clear();
                 await dictUseCache(enable);
@@ -165,8 +169,14 @@ async function setAutocomplete(dataSource) {
         maxResults: 10,//設定清單出現數量
         //source: tasep_dict_global.dataSource,
         source: async function (request, response) {
-            var results = $.ui.autocomplete.filter(dataSource, request.term);
-            await response(results.slice(0, this.options.maxResults));
+            try{
+                var results = $.ui.autocomplete.filter(dataSource, request.term);
+                await response(results.slice(0, this.options.maxResults));
+            }                
+            catch(error)
+            {
+                console.log("AutoComplete Source Error occurred: " + error.message);
+            }
         },
 
         focus: function (event, ui) {
@@ -207,31 +217,32 @@ async function setAutocomplete(dataSource) {
 
         }
     });
+
+
 }
 
 
 //檢查考生查詢剩餘數量
 async function checkQueryCountCorrect()
 {
-
     let formData = getFormDataFormat();
     
     const response = await axios.get('../api.php?api_name=getStudentQueryWordCount', {
         params: formData
     });
-
-    let queryCount = response.data;
+    
+    let serverRecordQueryCount = response.data;
     let elementQueryCount = document.getElementById("query_count");
+    let intQueryCount = parseInt(elementQueryCount.value, 10);
 
-    if (queryCount != parseInt(elementQueryCount.value, 10))
+    if (serverRecordQueryCount != intQueryCount)
     {
         return false;
     }
     else {
         return true;
     }
-    //return response.data;
-   
+    
 }
 
 function checkSearchedBefore(ui_item)
@@ -244,7 +255,9 @@ function checkSearchedBefore(ui_item)
 
     //有記錄，返回true
     tasep_dict_global.studentQueryWordHistoryList.find(function (item, index, array) {
-        if(parseInt(item.word_id, 10) == parseInt(ui_item.word_id,10))
+        let this_item_id = parseInt(item.word_id, 10);
+        let selected_item_id = parseInt(ui_item.word_id,10);
+        if( this_item_id == selected_item_id)
         {
             isFound = true;
         }
@@ -261,11 +274,13 @@ function addStudentQueryWordRecord(record) {
     let elementQueryCount = document.getElementById("query_count");
 
     elementQueryCount.value = parseInt(elementQueryCount.value, 10) + 1;
+    let intQueryLimit = parseInt(elementQueryLimit.value,10);
+    let intQueryCount = parseInt(elementQueryCount.value,10);
 
     //client update
     tasep_dict_global.studentQueryWordHistoryList.push(record);
     renderWordListRow(record);
-    renderQueryQuota(elementQueryLimit, elementQueryCount);
+    renderQueryQuota(intQueryLimit, intQueryCount);
     
     //server update
     sendStudentQueryWordRecord(record);
@@ -288,17 +303,21 @@ function sendStudentQueryWordRecord(record) {
             let elementQueryLimit = document.getElementById("query_limit");
             let elementQueryCount = document.getElementById("query_count");
             elementQueryCount.value = count;
-            renderQueryQuota(elementQueryLimit,elementQueryCount);
+
+            let intQueryLimit = parseInt(elementQueryLimit.value,10);
+            let intQueryCount = parseInt(elementQueryCount.value,10);
+            
+            renderQueryQuota(intQueryLimit,intQueryCount);
             //renderWordListRow(wordInfo);
         })
         .catch((error) => console.log(error))
 }
 
 //渲染更新剩餘數量
-function renderQueryQuota(elementQueryLimit, elementQueryCount) {
+function renderQueryQuota(intQueryLimit, intQueryCount) {
 
     let elementQueryLimitText = document.getElementsByClassName("tasep_dict_query_limit_text")[0];
-    let quota = parseInt(elementQueryLimit.value,10) - parseInt(elementQueryCount.value,10);
+    let quota = intQueryLimit - intQueryCount;
     elementQueryLimitText.innerHTML = `剩餘查詢次數：<span class="tasep_dict_query_limit_number">${quota}</span>&nbsp;次`;
 
     if (quota == 0) {

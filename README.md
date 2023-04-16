@@ -26,7 +26,6 @@ movies\
 
 ```html
 http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2247&exam_question_code=R22018&exam_sub_question_code=R22018-1&student_code=s111123450017
-
 ```
 
 後台預覽url

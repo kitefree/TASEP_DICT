@@ -11,18 +11,36 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2247&exam_que
 */
 
 
-include_once "../Config/database.php";
-include_once "../Common/DBHelper.php";
-include_once "../Services/LogService.php";
-include_once "../Services/StudentExamService.php";
+spl_autoload_register(function ($class) {
+    // 將命名空間的反斜線轉換為目錄路徑的斜線
+    $path = str_replace('\\', '/', $class);
 
+    $parent_dir = dirname(__DIR__);
+    // 假設類別檔案都放在 classes 目錄下
+    $file = $parent_dir . '/' . $path . '.php';
+    
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+
+use Common\DBHelper;
+use Configs\GlobalConfig;
 use Services\LogService;
 use Services\StudentExamService;
+
+//include_once "../Config/DatabaseConfig.php";
+//include_once "../Common/DBHelper.php";
+//include_once "../Services/LogService.php";
+//include_once "../Services/StudentExamService.php";
+
 
 
 $results = new stdClass();
 
 $sunnetData = new stdClass();
+
 
 
 
@@ -43,7 +61,15 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 $randomVersionNumber = time();
 
-$pdo = new DBHelper(TASEP_DICT_DB_HOST, TASEP_DICT_DB_DATABASE, TASEP_DICT_DB_USERNAME, TASEP_DICT_DB_PASSWORD);
+//$pdo = new DBHelper(TASEP_DICT_DB_HOST, TASEP_DICT_DB_DATABASE, TASEP_DICT_DB_USERNAME, TASEP_DICT_DB_PASSWORD);
+
+
+
+$pdo = new DBHelper(GlobalConfig::$DBConfig["TASEP_DICT_DB_HOST"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_DATABASE"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_USERNAME"],
+                    GlobalConfig::$DBConfig["TASEP_DICT_DB_PASSWORD"]);
+
 
 $logService = new LogService($pdo);
 $studentExamService = new StudentExamService($pdo,$logService);
