@@ -1,6 +1,5 @@
 # 1. TASEP_DICT
 
-[toc]
 
 ## 1.1. 相關說明
 
@@ -53,24 +52,32 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
-### 1.2.1. 2023.04.05 v1
+### 1.2.1. 2023.04.25 v8
 
-### 1.2.2. 2023.04.09 v2
+#### 1.2.1.1. 更新檔案清單如下：
 
-1. 學生查詢字典之LOG 紀錄實作
-   
-2. 檔案拆分架構
-   
-   部分完成，未來考慮加入composer、controller 等做法。
-   
-3. 廠商mockup進行套版
-   
-   部分完成，`表格`、`智能提示清單` style樣式待廠商提供
-   
-4. 更新autocomplete 套件
-    使用者可以使用「向下鍵↓」，進行挑選項目。
+![image-20230425211914076](https://i.imgur.com/gLOkfGj.png)
 
-### 1.2.3. 20230.04.19 v7
+#### 1.2.1.2. 更新內容如下：
+
+1. autocomplete 搜尋改以首字字母開始尋找。
+2. 當查詢7個單字後，會自動出現捲軸。
+3. 更新資料庫資料，for拍攝說明影片使用。
+
+#### 1.2.1.3. 請廠商協助以下事項：
+
+1. 請廠商協助在`預覽`時先hardcode 寫死`exam_code=tasep_test`、`exam_question_code=R23023`兩個參數，`exam_sub_question_code` 、`student_code`動態或任意填寫沒關係，如下：
+
+```html
+http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam_question_code=R23023&exam_sub_question_code=R22018-1&student_code=A001
+```
+
+補充說明，在`正式考生考試介面`時這四個參數會是動態的。
+
+2. 協助更新資料庫，建了些假單字(拍影片用)。匯入之檔名稱為`dump-tasep_dict-202304252111.sql`
+3. 協助更新程式。
+
+### 1.2.2. 2023.04.19 v7
 
 1. 修正pdo資源釋放
 
@@ -153,7 +160,24 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 
 
-### 1.2.3. Todo list
+### 1.2.3. 2023.04.09 v2
+
+1. 學生查詢字典之LOG 紀錄實作
+
+2. 檔案拆分架構
+
+   部分完成，未來考慮加入composer、controller 等做法。
+
+3. 廠商mockup進行套版
+
+   部分完成，`表格`、`智能提示清單` style樣式待廠商提供
+
+4. 更新autocomplete 套件
+   使用者可以使用「向下鍵↓」，進行挑選項目。
+
+### 1.2.4. 2023.04.05 v1
+
+## 1.3. Todo list
 
 1 .資料表結構有可能會再調整
 2 .會先預做一隻清db log table 的php，因為現在我無法操作資料庫，要測試功能會有些麻煩。

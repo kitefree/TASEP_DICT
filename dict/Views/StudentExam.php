@@ -82,7 +82,17 @@ $pdo->close();
     <script src="./lib/js/axios.min.js"></script>
     <script src="./lib/js/jquery.js"></script>
     <script src="./lib/js/jquery-ui.min.js"></script>  
-
+    <style>
+        thead tr th {
+  position: sticky;
+  top: 0;
+}
+/* Set a fixed scrollable wrapper */
+.tableWrap {
+  height: 350px;  
+  overflow: auto;
+}
+    </style>
 </head>
 
 <body>
@@ -110,22 +120,25 @@ $pdo->close();
             </div>
           
         </div>
-
-        <div class="row mt-4 justify-content-center">
-            <div class="col-md-12">
-                <table class="table mt-4 tasep_dict_table" id="wordList">
-                    <thead>
-                    <tr>
-                        <th>單字</th>
-                        <th>中文</th>
-                        <th>衍生</th>
-                    </tr>
-                    </thead>
-                    
-                    <tbody></tbody>
-                </table>
+        
+            <div class="row mt-4 justify-content-center">
+                <div class="col-md-12">
+                    <div class="tableWrap mb-3">
+                    <table class="table tasep_dict_table" id="wordList">
+                        <thead>
+                        <tr>
+                            <th>單字</th>
+                            <th>中文</th>
+                            <th>衍生</th>
+                        </tr>
+                        </thead>
+                        
+                        <tbody></tbody>
+                    </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        
         <input type="hidden" name="exam_id" id="exam_id" value="<?= $results->exam_id ?>" />    
         <input type="hidden" name="exam_code" id="exam_code" value="<?= $results->exam_code ?>" />
         <input type="hidden" name="exam_question_id" id="exam_question_id" value="<?= $results->exam_question_id ?>" />

@@ -167,41 +167,42 @@ async function setAutocomplete(dataSource) {
     $("#txtSearch").autocomplete({
         minLength: 1,//設定關鍵字觸發字元數量
         maxResults: 10,//設定清單出現數量
-        //source: tasep_dict_global.dataSource,
-        source: async function (request, response) {
-            try{
-                let results = $.ui.autocomplete.filter(dataSource, request.term);
+        source: tasep_dict_global.dataSource,
+        // source: async function (request, response) {
+            
+        //     try{
+        //         let results = $.ui.autocomplete.filter(dataSource, request.term);
                 
-                await response(results.slice(0, this.options.maxResults));
+        //         await response(results.slice(0, this.options.maxResults));
 
-                // let results02 = results.slice(0, this.options.maxResults); 
-                // let results03 = $.map( results02, function( item ) {
-                //     let formatLabel = item.label;
+        //         // let results02 = results.slice(0, this.options.maxResults); 
+        //         // let results03 = $.map( results02, function( item ) {
+        //         //     let formatLabel = item.label;
 
-                //     if(item.label.indexOf('...') >-1)
-                //     {
-                //         formatLabel = item.label.split('...')[0] + "      " + item.label.split('...')[1];
-                //     }
+        //         //     if(item.label.indexOf('...') >-1)
+        //         //     {
+        //         //         formatLabel = item.label.split('...')[0] + "      " + item.label.split('...')[1];
+        //         //     }
 
-                //     return {
-                //         exam_code:item.exam_code,
-                //         exam_question_code:item.exam_question_code,
-                //         word:item.word,
-                //         word_id:item.word_id,
-                //         descriptions:item.descriptions,
-                //         label: formatLabel,
-                //         value: item.value
-                // }}); 
-                // await response(results03);
+        //         //     return {
+        //         //         exam_code:item.exam_code,
+        //         //         exam_question_code:item.exam_question_code,
+        //         //         word:item.word,
+        //         //         word_id:item.word_id,
+        //         //         descriptions:item.descriptions,
+        //         //         label: formatLabel,
+        //         //         value: item.value
+        //         // }}); 
+        //         // await response(results03);
 
                 
                 
-            }                
-            catch(error)
-            {
-                console.log("AutoComplete Source Error occurred: " + error.message);
-            }
-        },
+        //     }                
+        //     catch(error)
+        //     {
+        //         console.log("AutoComplete Source Error occurred: " + error.message);
+        //     }
+        // },
 
         focus: function (event, ui) {
             event.preventDefault();
@@ -243,6 +244,13 @@ async function setAutocomplete(dataSource) {
         }
     });
 
+    //實作搜尋批配方式，首字符號才撈選出清單。
+    $.ui.autocomplete.filter = function (array, term) {
+        var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+        return $.grep(array, function (value) {
+            return matcher.test(value.label || value.value || value);
+        });
+    };
 
 }
 

@@ -53,10 +53,16 @@ class StudentExamService{
         //from query data
         $results->exam_id = $results01->exam_id;
         $results->exam_question_id = $results01->exam_question_id;
-        if($sunnetData->exam_code == 'tasep_test')    
+        
+        if($sunnetData->exam_code == 'tasep_test' && $sunnetData->exam_question_code == 'R23023')    
         {
-            $results->query_limit = 999;
+            $results->query_limit = $results01->query_limit;            
         }
+        else if($sunnetData->exam_code == 'tasep_test')    
+        {
+            $results->query_limit = $results01->query_limit;
+            $results->query_limit = 999;
+        }        
         else {
             $results->query_limit = $results01->query_limit;
         }
