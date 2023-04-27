@@ -52,6 +52,22 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
+### 2023.04.27
+
+1. 更新檔案清單如下：
+
+![image-20230427200652576](https://i.imgur.com/RbXrXYF.png)
+
+2. 協助匯入`20230427.sql`檔，檔案中指令共有5步驟，再麻煩依照順序執行。
+
+3. 驗收時，客戶會使用施測代號為`MS2316`，題組代號為`R23023`進行測試，預計URL結構如下，請參考：
+
+    ```HTML
+    http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=MS2316&exam_question_code=R23023&exam_sub_question_code=R23023-02-NE230&student_code=A001	
+    ```
+
+
+
 ### 1.2.1. 2023.04.25 v8
 
 #### 1.2.1.1. 更新檔案清單如下：

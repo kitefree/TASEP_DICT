@@ -109,5 +109,16 @@ select * from exam_question_words_description;
     set eqwd.word_id = eqw.id
 	where eqwd.exam_id = 999 and eqwd.exam_question_id = 900;
 	
+
+	CREATE TABLE exams_20230427
+	SELECT *
+	FROM exams
+	where id=2
 	
+	CREATE TABLE exam_questions_20230427
+	SELECT *
+	FROM exam_questions eq 
+	where id=3
+	
+
 	
