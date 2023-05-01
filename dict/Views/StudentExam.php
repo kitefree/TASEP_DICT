@@ -81,18 +81,7 @@ $pdo->close();
     <script src="./lib/js/autocomplete.js"></script>
     <script src="./lib/js/axios.min.js"></script>
     <script src="./lib/js/jquery.js"></script>
-    <script src="./lib/js/jquery-ui.min.js"></script>  
-    <style>
-        thead tr th {
-  position: sticky;
-  top: 0;
-}
-/* Set a fixed scrollable wrapper */
-.tableWrap {
-  height: 350px;  
-  overflow: auto;
-}
-    </style>
+    <script src="./lib/js/jquery-ui.min.js"></script>
 </head>
 
 <body>
@@ -150,10 +139,10 @@ $pdo->close();
 
     </div>
 
-    <!-- <link href="./lib/css/studentexam.css?v=<?php echo $randomVersionNumber;?>" rel="stylesheet">
-    <script src="./lib/js/StudentExam.js?v=<?php echo $randomVersionNumber;?>"></script> -->
-    <link href="./lib/css/studentexam.css" rel="stylesheet">
-    <script src="./lib/js/StudentExam.js"></script>
+    <link href="./lib/css/studentexam.css?v=<?php echo $randomVersionNumber;?>" rel="stylesheet">
+    <script src="./lib/js/StudentExam.js?v=<?php echo $randomVersionNumber;?>"></script>
+    <!-- <link href="./lib/css/studentexam.css" rel="stylesheet">
+    <script src="./lib/js/StudentExam.js"></script> -->
 
 
 </body>

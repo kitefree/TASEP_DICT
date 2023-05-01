@@ -244,11 +244,39 @@ async function setAutocomplete(dataSource) {
         }
     });
 
-    //實作搜尋批配方式，首字符號才撈選出清單。
+    //實作搜尋批配方式
     $.ui.autocomplete.filter = function (array, term) {
+        
+        //首字符號才撈選出清單。
         var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+
         return $.grep(array, function (value) {
-            return matcher.test(value.label || value.value || value);
+
+            //優先比對label文字，有則直接返回
+            if(matcher.test(value.label))
+            {
+                return true;
+            }
+            
+            //衍生字為空，沒有東西可以比對，直接返回結果
+            if(value.meta_keyword == null){
+                return false;
+            }
+            
+            //衍生字不為空時，進行比對             
+            //衍生字會有多個單字，故需要處理每個單字的比對
+            let arrKeywords = value.meta_keyword.split(';');
+            let findResult = false;
+            arrKeywords.forEach(function(element) {
+                element = element.trim();
+                if(matcher.test(element))
+                {
+                    findResult = true;
+                }
+            });
+            
+            return findResult;
+
         });
     };
 
