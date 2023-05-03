@@ -136,6 +136,7 @@ $pdo->close();
         <input type="hidden" name="student_code" id="student_code" value="<?= $results->student_code ?>" />
         <input type="hidden" name="query_limit" id="query_limit" value="<?= $results->query_limit ?>" />
         <input type="hidden" name="query_count" id="query_count" value="<?= $results->query_count ?>" />        
+        <input type="hidden" name="query_word" id="query_word" value="" />
 
     </div>
 

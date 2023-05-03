@@ -144,7 +144,7 @@ class ApiService{
             $querySQL = "SELECT
             logs.exam_code,
             logs.exam_question_code,
-            logs.exam_question_word_id,
+            logs.exam_question_word_id as word_id,
             logs.word,
             logs.meta_keyword,
             CASE

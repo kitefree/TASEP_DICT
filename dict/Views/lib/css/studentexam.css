@@ -87,6 +87,6 @@ thead tr th {
 }
 /*表格高度出現卷軸*/
 .tableWrap {
-    height: 250px;  
+    height: 300px;  
     overflow: auto;
 }

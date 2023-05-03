@@ -116,7 +116,7 @@ async function getStudentQueryWordHistoryList() {
 }
 
 
-function getFormDataFormat(record) {
+function getFormDataFormat(record,query_word = '') {
     
     let exam_id = document.getElementById("exam_id").value;
     let exam_question_id = document.getElementById("exam_question_id").value;
@@ -125,10 +125,9 @@ function getFormDataFormat(record) {
     let exam_question_code = document.getElementById("exam_question_code").value;
     let exam_sub_question_code = document.getElementById("exam_sub_question_code").value;
     let student_code = document.getElementById("student_code").value;
-    let query_word = '';
+    
 
-    if (record !== undefined) {    
-        query_word = record.word;
+    if (record !== undefined) {            
         exam_question_word_id = record.word_id;
     }
 
@@ -211,7 +210,7 @@ async function setAutocomplete(dataSource) {
             // console.log(ui.item.value);
         },
         select: async function (event, ui) {
-
+            
             event.preventDefault();
 
             //1.優先檢查後端查詢數量
@@ -223,8 +222,9 @@ async function setAutocomplete(dataSource) {
                 location.href = location.href;
                 return;
             }
-
-            //2. 字串處理
+            //2. 儲存當下使用者查詢之單字
+            $('#query_word').val($('#txtSearch').val());
+            //3. 字串處理
             if (ui.item.label.indexOf('(') > -1 && ui.item.label.indexOf(')') > -1) {
                 let endindex = ui.item.label.indexOf('(') -1;// 最後有多一個空白，再減1
                 $('#txtSearch').val(ui.item.label.substring(0,endindex));
@@ -233,11 +233,11 @@ async function setAutocomplete(dataSource) {
                 $('#txtSearch').val(ui.item.label);
             }
 
-            //3. 在client檢查是否曾經查詢過此單字
+            //4. 在client檢查是否曾經查詢過此單字
             let hasSearchedBefore = checkSearchedBefore(ui.item);
             
             if (hasSearchedBefore == false) {            
-                addStudentQueryWordRecord(ui.item);                
+                addStudentQueryWordRecord(ui.item,$('#query_word').val());                
                 return;
             }
 
@@ -330,7 +330,7 @@ function checkSearchedBefore(ui_item)
 }
 
 //增加查單字記錄
-function addStudentQueryWordRecord(record) {
+function addStudentQueryWordRecord(record,query_word) {
     let elementQueryLimit = document.getElementById("query_limit");
     let elementQueryCount = document.getElementById("query_count");
 
@@ -344,7 +344,7 @@ function addStudentQueryWordRecord(record) {
     renderQueryQuota(intQueryLimit, intQueryCount);
     
     //server update
-    sendStudentQueryWordRecord(record);
+    sendStudentQueryWordRecord(record,query_word);
     
 
 }
@@ -352,8 +352,8 @@ function addStudentQueryWordRecord(record) {
 
 
 //使用者送出查詢單字
-function sendStudentQueryWordRecord(record) {
-    let formData = getFormDataFormat(record);
+function sendStudentQueryWordRecord(record,query_word) {
+    let formData = getFormDataFormat(record,query_word);
     axios.get('../api.php?api_name=queryWord', {
         params: formData
     })
