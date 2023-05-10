@@ -52,7 +52,13 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
-### 1.2.1. 2023.05.07
+### 1.2.1. 2023.05.10
+
+1. 客戶需求，參考之前某某人建立之字典資料。
+2. 協助匯入`20230510.sql`檔，檔案中指令共有10個步驟(二個施測)，再麻煩依照順序執行。
+3. 測試時，客戶會使用施測代號為`FT2313`及`FT1212`，題組代號皆為`E22082`進行測試。
+
+### 1.2.2. 2023.05.07
 
 1. 客戶需求，參考之前某某人建立之字典資料。
 
@@ -64,7 +70,7 @@ $sunnetData->student_code           = $_GET["student_code"];
    http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2311&exam_question_code=E22082&exam_sub_question_code=R23023-02-NE230&student_code=A001
    ```
 
-### 1.2.2. 2023.05.03
+### 1.2.3. 2023.05.03
 
 1.更新檔案清單如下：
 
@@ -76,7 +82,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 - 修正同一個單字查詢2次，被扣次數問題。
 
-### 1.2.3. 2023.05.01
+### 1.2.4. 2023.05.01
 
 1. 更新檔案清單如下：
 
@@ -88,7 +94,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 
 
-### 1.2.4. 2023.04.27
+### 1.2.5. 2023.04.27
 
 1. 更新檔案清單如下：
 
@@ -104,19 +110,19 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 
 
-### 1.2.5. 2023.04.25 v8
+### 1.2.6. 2023.04.25 v8
 
-#### 1.2.5.1. 更新檔案清單如下：
+#### 1.2.6.1. 更新檔案清單如下：
 
 ![image-20230425211914076](https://i.imgur.com/gLOkfGj.png)
 
-#### 1.2.5.2. 更新內容如下：
+#### 1.2.6.2. 更新內容如下：
 
 1. autocomplete 搜尋改以首字字母開始尋找。
 2. 當查詢7個單字後，會自動出現捲軸。
 3. 更新資料庫資料，for拍攝說明影片使用。
 
-#### 1.2.5.3. 請廠商協助以下事項：
+#### 1.2.6.3. 請廠商協助以下事項：
 
 1. 請廠商協助在`預覽`時先hardcode 寫死`exam_code=tasep_test`、`exam_question_code=R23023`兩個參數，`exam_sub_question_code` 、`student_code`動態或任意填寫沒關係，如下：
 
@@ -129,7 +135,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 2. 協助更新資料庫，建了些假單字(拍影片用)。匯入之檔名稱為`dump-tasep_dict-202304252111.sql`
 3. 協助更新程式。
 
-### 1.2.6. 2023.04.19 v7
+### 1.2.7. 2023.04.19 v7
 
 1. 修正pdo資源釋放
 
@@ -212,7 +218,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 
 
 
-### 1.2.7. 2023.04.09 v2
+### 1.2.8. 2023.04.09 v2
 
 1. 學生查詢字典之LOG 紀錄實作
 
@@ -227,7 +233,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 4. 更新autocomplete 套件
    使用者可以使用「向下鍵↓」，進行挑選項目。
 
-### 1.2.8. 2023.04.05 v1
+### 1.2.9. 2023.04.05 v1
 
 ## 1.3. Todo list
 
