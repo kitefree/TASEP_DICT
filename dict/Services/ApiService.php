@@ -42,6 +42,7 @@ class ApiService{
         WHERE e.exam_code = ?
         AND eq.question_code = ?    
         GROUP BY eqwd.word_id
+        ORDER BY CHAR_LENGTH(eqw.word)
         ";
 
 
