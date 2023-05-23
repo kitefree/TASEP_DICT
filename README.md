@@ -52,6 +52,12 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
+### 2023.05.23
+
+1. 針對使用者查詢歷史單字依查詢時間進行排序。
+
+2. 協助更新`apiservice.php`。
+
 ### 1.2.1. 2023.05.22
 
 1. 協助更新`apiservice.php`，修改查詢條件依據單字長度進行排序。

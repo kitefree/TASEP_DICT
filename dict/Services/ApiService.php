@@ -161,6 +161,7 @@ class ApiService{
             AND logs.student_code = ?    
             AND logs.type = ?
             GROUP BY logs.exam_question_word_id
+            ORDER BY logs.query_time
             ";
             //WHERE e.exam_code = ?
             //AND eq.question_code = ?    
