@@ -119,6 +119,49 @@ select * from exam_question_words_description;
 	SELECT *
 	FROM exam_questions eq 
 	where id=3
-	
+
+
+	set @SOURCE_R22018_ID := 1,@SOURCE_R22019_ID :=2,@new_exam_id := 12,@new_R22018_ID :=17,@new_R22019_ID :=18;
+
+	select @SOURCE_R22018_ID,@SOURCE_R22019_ID,@new_exam_id ,@new_R22018_ID,@new_R22019_ID
+
+	/* 單字表複製 */
+	insert into exam_question_words (created_at,exam_id,exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword)    
+	select '2023-05-28 23:00:00' as created_at,@new_exam_id as exam_id,@new_R22018_ID as exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword
+	from exam_question_words
+	where exam_id = 1 and exam_question_id  = @SOURCE_R22018_ID;
+
+	/* 單字表複製 */
+	insert into exam_question_words (created_at,exam_id,exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword)    
+	select '2023-05-28 23:00:00' as created_at,@new_exam_id as exam_id,@new_R22019_ID as exam_question_id,word,word_frequency_source_01,word_frequency_source_02,meta_keyword
+	from exam_question_words
+	where exam_id = 1 and exam_question_id  = @SOURCE_R22019_ID;
+
+	/* 詞性表複製 */
+	insert into exam_question_words_description(created_at,exam_id,exam_question_id,word_id,word,part_of_speech,chinese_description)
+	select '2023-05-28 23:00:00' as created_at,@new_exam_id as exam_id,@new_R22018_ID as exam_question_id,word_id,word,part_of_speech,chinese_description
+	from exam_question_words_description
+	where exam_id = 1 and exam_question_id  = @SOURCE_R22018_ID;
+
+	/* 詞性表複製 */
+	insert into exam_question_words_description(created_at,exam_id,exam_question_id,word_id,word,part_of_speech,chinese_description)
+	select '2023-05-28 23:00:00' as created_at,@new_exam_id as exam_id,@new_R22019_ID as exam_question_id,word_id,word,part_of_speech,chinese_description
+	from exam_question_words_description
+	where exam_id = 1 and exam_question_id  = @SOURCE_R22019_ID;
+
+	/*更新word_id*/
+	update exam_question_words_description eqwd		
+	join exam_question_words eqw on eqwd.exam_id =eqw.exam_id  and eqwd.exam_question_id = eqw.exam_question_id and eqwd.word = eqw.word 
+	set eqwd.word_id = eqw.id
+	where eqwd.exam_id = @new_exam_id and eqwd.exam_question_id = @new_R22018_ID;	 
+
+	/*更新word_id*/
+	update exam_question_words_description eqwd		
+	join exam_question_words eqw on eqwd.exam_id =eqw.exam_id  and eqwd.exam_question_id = eqw.exam_question_id and eqwd.word = eqw.word 
+	set eqwd.word_id = eqw.id
+	where eqwd.exam_id = @new_exam_id and eqwd.exam_question_id = @new_R22019_ID;	 
+
+
+
 
 	
