@@ -52,6 +52,10 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
+### 2023.06.07
+
+協助更新資料庫資料(新增字典for`FT2346`施測備用)，請參考檔案`dump-tasep_dict-202306072055.sql`。
+
 ### 2023.05.29
 
 協助更新資料庫資料(新增字典for`FT2318` `FT2319` `FT2325`施測使用)，請參考檔案`dump-tasep_dict-202305290839.sql`。
