@@ -48,9 +48,12 @@ $sunnetData->exam_sub_question_code = $_GET["exam_sub_question_code"];
 $sunnetData->student_code           = $_GET["student_code"];
 ```
 
-
-
 ## 1.2. 日誌記錄
+
+### 2023.08.29
+
+1. 協助更新資料庫資料(新增字典for`FT2323`施測備用)，請參考測試區`dump-tasep_dict-202308290921.sql`。
+2. 調整查詢單字方式，支援查詢片語中的單字及key2個字母才允許出現候選清單，請協助更新`StudentExam.js`。
 
 ### 2023.06.07
 
