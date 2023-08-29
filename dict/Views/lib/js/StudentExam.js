@@ -245,12 +245,49 @@ async function setAutocomplete(dataSource) {
     });
 
     //實作搜尋批配方式
-    $.ui.autocomplete.filter = function (array, term) {
-        
+    $.ui.autocomplete.filter = function (array, term) {        
+        //長度低於2，不查詢
+        if(term.length < 2)
+        {
+            return;
+        }
         //首字符號才撈選出清單。
         var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
 
         return $.grep(array, function (value) {
+
+            value.label = $.trim(value.label);
+
+            //判斷是否為片語，特性為字單間「空白」 或 「...」 或「…」
+            if(value.label.split(' ').length >1   || 
+               value.label.split('...').length >1 || 
+               value.label.split('…').length >1)
+            {                
+                let splitBySymbol = '';
+                if(value.label.split(' ').length >1)
+                {
+                    splitBySymbol = ' ';
+                }
+                else if(value.label.split('...').length >1){
+                    splitBySymbol = '...';
+                }
+                else if(value.label.split('…').length >1){
+                    splitBySymbol = '…';
+                }
+
+                let arrPhrase = value.label.split(splitBySymbol);
+                let hasFound = false;               
+                arrPhrase.forEach(function(pharseWord) {
+                    if(matcher.test(pharseWord))
+                    {
+                        hasFound = true;                        
+                    }
+                });
+                if(hasFound == true)
+                {
+                    return true;
+                }
+            }
 
             //優先比對label文字，有則直接返回
             if(matcher.test(value.label))
