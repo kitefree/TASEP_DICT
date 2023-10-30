@@ -50,46 +50,50 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
-### 1.2.1. 2023.09.07
+### 1.2.1. 2023.10.30
+
+1. 協助更新`測試資料庫`資料(新增字典for`FT2370`施測)，請參考測試區`dump-tasep_dict-202310302127.sql`。
+
+### 1.2.2. 2023.09.07
 
 1. 協助更新`測試資料庫`資料(新增字典for`FT2363`施測備用)，請參考測試區`dump-tasep_dict-202309070834.sql`。
 
-### 1.2.2. 2023.09.02
+### 1.2.3. 2023.09.02
 
 1. 協助更新`測試資料庫`資料(新增字典for`FT2360`、`FT2361`施測備用)，請參考測試區`dump-tasep_dict-202309021631.sql`。
 
 
-### 1.2.3. 2023.08.29
+### 1.2.4. 2023.08.29
 
 1. 協助更新資料庫資料(新增字典for`FT2323`施測備用)，請參考測試區`dump-tasep_dict-202308290921.sql`。
 2. 調整查詢單字方式，支援查詢片語中的單字及key2個字母才允許出現候選清單，請協助更新`StudentExam.js`。
 
-### 1.2.4. 2023.06.07
+### 1.2.5. 2023.06.07
 
 協助更新資料庫資料(新增字典for`FT2346`施測備用)，請參考檔案`dump-tasep_dict-202306072055.sql`。
 
-### 1.2.5. 2023.05.29
+### 1.2.6. 2023.05.29
 
 協助更新資料庫資料(新增字典for`FT2318` `FT2319` `FT2325`施測使用)，請參考檔案`dump-tasep_dict-202305290839.sql`。
 
-### 1.2.6. 2023.05.23
+### 1.2.7. 2023.05.23
 
 1. 針對使用者查詢歷史單字依查詢時間進行排序。
 
 2. 協助更新`apiservice.php`。
 
-### 1.2.7. 2023.05.22
+### 1.2.8. 2023.05.22
 
 1. 協助更新`apiservice.php`，修改查詢條件依據單字長度進行排序。
 
 
-### 1.2.8. 2023.05.20
+### 1.2.9. 2023.05.20
 
 1. 協助匯入`正式區`sql檔案，請參考資料夾`sqldata\正式區`，`20230522_FT2307.sql`、`20230522_FT2309.sql`共二個檔案。
 
 2. 協助匯入`測試區`sql檔案，請參考資料夾`sqldata\測試區`，`20230522.sql`共一個檔案。
 
-### 1.2.9. 2023.05.17
+### 1.2.10. 2023.05.17
 
 1. 客戶需求，參考之前某某人建立之字典資料。
 
@@ -101,13 +105,13 @@ $sunnetData->student_code           = $_GET["student_code"];
    http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2319&exam_question_code=E22082&exam_sub_question_code=R23023-02-NE230&student_code=A001
    ```
 
-### 1.2.10. 2023.05.10
+### 1.2.11. 2023.05.10
 
 1. 客戶需求，參考之前某某人建立之字典資料。
 2. 協助匯入`20230510.sql`檔，檔案中指令共有10個步驟(二個施測)，再麻煩依照順序執行。
 3. 測試時，客戶會使用施測代號為`FT2313`及`FT1212`，題組代號皆為`E22082`進行測試。
 
-### 1.2.11. 2023.05.07
+### 1.2.12. 2023.05.07
 
 1. 客戶需求，參考之前某某人建立之字典資料。
 
@@ -119,7 +123,7 @@ $sunnetData->student_code           = $_GET["student_code"];
    http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=FT2311&exam_question_code=E22082&exam_sub_question_code=R23023-02-NE230&student_code=A001
    ```
 
-### 1.2.12. 2023.05.03
+### 1.2.13. 2023.05.03
 
 1.更新檔案清單如下：
 
@@ -131,7 +135,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 - 修正同一個單字查詢2次，被扣次數問題。
 
-### 1.2.13. 2023.05.01
+### 1.2.14. 2023.05.01
 
 1. 更新檔案清單如下：
 
@@ -143,7 +147,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 
 
-### 1.2.14. 2023.04.27
+### 1.2.15. 2023.04.27
 
 1. 更新檔案清單如下：
 
@@ -159,19 +163,19 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 
 
-### 1.2.15. 2023.04.25 v8
+### 1.2.16. 2023.04.25 v8
 
-#### 1.2.15.1. 更新檔案清單如下：
+#### 1.2.16.1. 更新檔案清單如下：
 
 ![image-20230425211914076](https://i.imgur.com/gLOkfGj.png)
 
-#### 1.2.15.2. 更新內容如下：
+#### 1.2.16.2. 更新內容如下：
 
 1. autocomplete 搜尋改以首字字母開始尋找。
 2. 當查詢7個單字後，會自動出現捲軸。
 3. 更新資料庫資料，for拍攝說明影片使用。
 
-#### 1.2.15.3. 請廠商協助以下事項：
+#### 1.2.16.3. 請廠商協助以下事項：
 
 1. 請廠商協助在`預覽`時先hardcode 寫死`exam_code=tasep_test`、`exam_question_code=R23023`兩個參數，`exam_sub_question_code` 、`student_code`動態或任意填寫沒關係，如下：
 
@@ -184,7 +188,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 2. 協助更新資料庫，建了些假單字(拍影片用)。匯入之檔名稱為`dump-tasep_dict-202304252111.sql`
 3. 協助更新程式。
 
-### 1.2.16. 2023.04.19 v7
+### 1.2.17. 2023.04.19 v7
 
 1. 修正pdo資源釋放
 
@@ -267,7 +271,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 
 
 
-### 1.2.17. 2023.04.09 v2
+### 1.2.18. 2023.04.09 v2
 
 1. 學生查詢字典之LOG 紀錄實作
 
@@ -282,7 +286,7 @@ http://localhost/TASEP_DICT/dict/views/StudentExam.php?exam_code=tasep_test&exam
 4. 更新autocomplete 套件
    使用者可以使用「向下鍵↓」，進行挑選項目。
 
-### 1.2.18. 2023.04.05 v1
+### 1.2.19. 2023.04.05 v1
 
 ## 1.3. Todo list
 
