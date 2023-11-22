@@ -245,7 +245,11 @@ async function setAutocomplete(dataSource) {
     });
 
     //實作搜尋批配方式
-    $.ui.autocomplete.filter = function (array, term) {        
+    $.ui.autocomplete.filter = function (array, term) {   
+        
+        //trim 前後空白
+        term = $.trim(term);       
+        
         //長度低於2，不查詢
         if(term.length < 2)
         {
