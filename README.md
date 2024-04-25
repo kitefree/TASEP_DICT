@@ -50,6 +50,7 @@ $sunnetData->student_code           = $_GET["student_code"];
 
 ## 1.2. 日誌記錄
 
+1. 協助更新`正式資料庫`資料，請參考正式區`dump-tasep_dict-202404252053.sql`。
 
 ### 1.2.1. 2024.04.09
 1. 協助更新`測試資料庫`資料，請參考測試區`dump-tasep_dict-202404091910.sql`。
